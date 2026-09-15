@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#123f73">
+  <title>운전적성정밀검사 업무숙달 시험</title>
+  <style>
+    :root {
+      --navy: #123f73;
+      --navy-deep: #0a294d;
+      --mint: #13b89b;
+      --mint-soft: #e7f8f4;
+      --blue-soft: #edf4fb;
+      --ink: #172335;
+      --muted: #66768a;
+      --line: #dce5ef;
+      --surface: rgba(255,255,255,.94);
+      --danger: #e24b4b;
+      --danger-soft: #fff0f0;
+      --success: #078a70;
+      --shadow: 0 22px 60px rgba(16, 48, 82, .14);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: Pretendard, "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 12% 5%, rgba(19,184,155,.18), transparent 26rem),
+        radial-gradient(circle at 95% 20%, rgba(48,123,198,.16), transparent 30rem),
+        linear-gradient(145deg, #f4f8fc 0%, #eef5f7 100%);
+    }
+    button { font: inherit; }
+    .app { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 32px 0 48px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 22px; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .mark { width: 46px; height: 46px; border-radius: 15px; display: grid; place-items: center; color: #fff; font-weight: 900; letter-spacing: -.05em; background: linear-gradient(145deg, var(--navy), #1768a9); box-shadow: 0 12px 24px rgba(18,63,115,.22); }
+    .brand strong { display: block; font-size: 17px; }
+    .brand span { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; }
+    .reset-link { border: 1px solid var(--line); border-radius: 12px; padding: 9px 12px; background: rgba(255,255,255,.7); color: var(--muted); cursor: pointer; }
+    .layout { display: grid; grid-template-columns: minmax(0, 1fr) 278px; gap: 22px; align-items: start; }
+    .card { background: var(--surface); border: 1px solid rgba(213,225,237,.9); border-radius: 26px; box-shadow: var(--shadow); backdrop-filter: blur(12px); }
+    .exam-card { overflow: hidden; }
+    .exam-head { padding: 25px 30px 20px; border-bottom: 1px solid var(--line); }
+    .eyebrow { display: flex; align-items: center; justify-content: space-between; gap: 16px; color: var(--navy); font-size: 13px; font-weight: 800; }
+    .live { display: inline-flex; align-items: center; gap: 7px; color: var(--success); }
+    .live::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 0 5px rgba(19,184,155,.12); }
+    .progress-track { height: 8px; margin-top: 17px; overflow: hidden; border-radius: 999px; background: #e7eef5; }
+    .progress-bar { width: 5%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--mint), #3a86d1); transition: width .35s ease; }
+    .question-area { padding: 32px 30px 28px; }
+    .question-no { color: var(--mint); font-size: 14px; font-weight: 900; letter-spacing: .08em; }
+    h1 { margin: 11px 0 25px; font-size: clamp(22px, 3vw, 30px); line-height: 1.42; letter-spacing: -.035em; }
+    .choices { display: grid; gap: 12px; }
+    .choice { width: 100%; display: flex; align-items: flex-start; gap: 14px; padding: 17px 18px; border: 1.5px solid var(--line); border-radius: 16px; background: #fff; color: var(--ink); text-align: left; line-height: 1.5; cursor: pointer; transition: transform .16s ease, border-color .16s ease, background .16s ease, box-shadow .16s ease; }
+    .choice:hover:not(:disabled) { transform: translateY(-2px); border-color: #82a8cc; box-shadow: 0 9px 22px rgba(30,83,132,.1); }
+    .choice:focus-visible { outline: 3px solid rgba(19,184,155,.24); outline-offset: 2px; }
+    .choice:disabled { cursor: default; }
+    .choice-key { flex: 0 0 30px; width: 30px; height: 30px; display: grid; place-items: center; border-radius: 10px; background: var(--blue-soft); color: var(--navy); font-weight: 900; }
+    .choice.correct { border-color: var(--mint); background: var(--mint-soft); }
+    .choice.correct .choice-key { color: #fff; background: var(--success); }
+    .choice.wrong { border-color: #ef8f8f; background: var(--danger-soft); }
+    .choice.wrong .choice-key { color: #fff; background: var(--danger); }
+    .feedback { display: none; margin-top: 20px; padding: 17px 18px; border-radius: 16px; line-height: 1.55; }
+    .feedback.show { display: block; animation: rise .25s ease both; }
+    .feedback.good { background: var(--mint-soft); border: 1px solid #9cdecf; }
+    .feedback.bad { background: var(--danger-soft); border: 1px solid #f2b5b5; }
+    .feedback-title { display: block; margin-bottom: 4px; font-weight: 900; }
+    .actions { display: flex; justify-content: flex-end; margin-top: 22px; }
+    .primary { border: 0; border-radius: 14px; padding: 14px 21px; color: #fff; background: linear-gradient(135deg, var(--navy), #1768a9); font-weight: 800; cursor: pointer; box-shadow: 0 10px 22px rgba(18,63,115,.2); }
+    .primary:disabled { opacity: .4; cursor: not-allowed; box-shadow: none; }
+    .sidebar { padding: 22px; position: sticky; top: 20px; }
+    .timer { display: flex; align-items: center; justify-content: space-between; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+    .timer span { color: var(--muted); font-size: 13px; }
+    .timer strong { color: var(--navy-deep); font-size: 20px; font-variant-numeric: tabular-nums; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 17px 0 20px; }
+    .stat { padding: 12px 5px; border-radius: 13px; background: var(--blue-soft); text-align: center; }
+    .stat b { display: block; color: var(--navy); font-size: 20px; }
+    .stat span { color: var(--muted); font-size: 11px; }
+    .navigator-title { margin: 0 0 11px; font-size: 13px; color: var(--muted); }
+    .navigator { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; }
+    .nav-dot { aspect-ratio: 1; border: 1px solid var(--line); border-radius: 10px; background: #fff; color: var(--muted); font-size: 12px; font-weight: 800; }
+    .nav-dot.current { border-color: var(--navy); color: var(--navy); box-shadow: inset 0 0 0 1px var(--navy); }
+    .nav-dot.correct { border-color: var(--mint); background: var(--mint-soft); color: var(--success); }
+    .nav-dot.wrong { border-color: #ef9b9b; background: var(--danger-soft); color: var(--danger); }
+    .source-note { margin: 18px 0 0; color: var(--muted); font-size: 11px; line-height: 1.55; }
+    .result { display: none; padding: 32px 30px; }
+    .result.show { display: block; }
+    .result-hero { text-align: center; padding: 15px 0 26px; }
+    .score-ring { width: 150px; height: 150px; margin: 0 auto 18px; border-radius: 50%; display: grid; place-items: center; background: conic-gradient(var(--mint) var(--score-angle), #e7eef5 0); position: relative; }
+    .score-ring::after { content: ""; position: absolute; inset: 12px; border-radius: 50%; background: #fff; }
+    .score-ring div { position: relative; z-index: 1; }
+    .score-ring strong { display: block; color: var(--navy-deep); font-size: 39px; line-height: 1; }
+    .score-ring span { color: var(--muted); font-size: 12px; }
+    .result h2 { margin: 0 0 7px; font-size: 27px; }
+    .result p { margin: 0; color: var(--muted); }
+    .result-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin: 23px 0 28px; }
+    .secondary { border: 1px solid var(--line); border-radius: 14px; padding: 13px 18px; color: var(--navy); background: #fff; font-weight: 800; cursor: pointer; }
+    .review-list { display: grid; gap: 12px; }
+    .review-item { padding: 16px; border: 1px solid var(--line); border-radius: 15px; background: #fff; }
+    .review-item.wrong { border-left: 5px solid var(--danger); }
+    .review-item.correct { border-left: 5px solid var(--mint); }
+    .review-item strong { display: block; margin-bottom: 7px; line-height: 1.45; }
+    .review-item small { color: var(--muted); line-height: 1.5; }
+    .shortcut { margin-top: 16px; text-align: center; color: #91a0b0; font-size: 11px; }
+    @keyframes rise { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+    @media (max-width: 800px) {
+      .app { width: min(100% - 20px, 680px); padding-top: 18px; }
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; order: -1; padding: 16px 18px; }
+      .sidebar .navigator-title, .sidebar .navigator, .source-note, .shortcut { display: none; }
+      .timer { padding-bottom: 12px; }
+      .stats { margin: 12px 0 0; }
+      .exam-head { padding: 20px 20px 17px; }
+      .question-area, .result { padding: 25px 20px 22px; }
+      h1 { font-size: 22px; }
+      .choice { padding: 15px; }
+    }
+    @media (max-width: 430px) {
+      .brand span { display: none; }
+      .reset-link { padding: 8px 10px; font-size: 12px; }
+      .topbar { margin-bottom: 14px; }
+      .mark { width: 40px; height: 40px; border-radius: 13px; }
+      .card { border-radius: 21px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="mark" aria-hidden="true">TS</div>
+        <div><strong>운전적성정밀검사 업무숙달</strong><span>40문항 · 선택 즉시 채점</span></div>
+      </div>
+      <button class="reset-link" id="resetTop" type="button">처음부터</button>
+    </header>
+
+    <div class="layout">
+      <section class="card exam-card" aria-live="polite">
+        <div id="quizView">
+          <div class="exam-head">
+            <div class="eyebrow"><span id="counter">문제 1 / 40</span><span class="live">실시간 채점</span></div>
+            <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+          </div>
+          <div class="question-area">
+            <div class="question-no" id="category">기본개념</div>
+            <h1 id="question">문제를 불러오는 중입니다.</h1>
+            <div class="choices" id="choices"></div>
+            <div class="feedback" id="feedback"></div>
+            <div class="actions"><button class="primary" id="nextBtn" type="button" disabled>다음 문제</button></div>
+          </div>
+        </div>
+
+        <div class="result" id="resultView">
+          <div class="result-hero">
+            <div class="score-ring" id="scoreRing"><div><strong id="finalScore">0</strong><span>100점 만점</span></div></div>
+            <h2 id="resultTitle">시험 완료</h2>
+            <p id="resultSummary"></p>
+            <div class="result-actions">
+              <button class="primary" id="retryAll" type="button">전체 다시 풀기</button>
+              <button class="secondary" id="retryWrong" type="button">오답만 다시 풀기</button>
+            </div>
+          </div>
+          <div class="review-list" id="reviewList"></div>
+        </div>
+      </section>
+
+      <aside class="card sidebar">
+        <div class="timer"><span>경과 시간</span><strong id="timer">00:00</strong></div>
+        <div class="stats">
+          <div class="stat"><b id="correctCount">0</b><span>정답</span></div>
+          <div class="stat"><b id="wrongCount">0</b><span>오답</span></div>
+          <div class="stat"><b id="rate">0%</b><span>정답률</span></div>
+        </div>
+        <p class="navigator-title">문항 현황</p>
+        <div class="navigator" id="navigator"></div>
+        <p class="source-note">제공된 「운전적성정밀검사」 및 「수검안내」 자료를 기준으로 구성했습니다.</p>
+        <p class="shortcut">숫자키 1~4 선택 · Enter 다음 문제</p>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    const allQuestions = [
+      { category: "기본개념", q: "운전적성정밀검사의 주된 목적은 무엇인가?", choices: ["운전면허 갱신", "자동차 정비능력 측정", "운전자 요인에 의한 교통사고 예방", "교통법규 위반 단속"], answer: 2, explain: "인지·판단·조작에 따른 운전적성상의 결함요인을 측정해 운전자 요인에 의한 교통사고 예방에 기여하는 검사입니다." },
+      { category: "기본개념", q: "운전적성정밀검사가 운전행동과 관련해 과학적으로 측정하는 것은?", choices: ["인성·습관·행동", "차량 가격·연식·배기량", "도로 폭·노면·기상", "근무시간·급여·휴가"], answer: 0, explain: "운전행동과 관계되는 인성, 습관 및 행동 등을 과학적으로 측정하는 심리검사입니다." },
+      { category: "검사종류", q: "다음 중 운전적성정밀검사의 종류가 아닌 것은?", choices: ["신규검사", "군운전적성정밀검사", "특별검사", "차량안전정비검사"], answer: 3, explain: "검사 종류는 신규검사, 군운전적성정밀검사, 특별검사, 자격유지검사입니다." },
+      { category: "예약·발급", q: "운전적성정밀검사를 예약할 때 이용하는 홈페이지는?", choices: ["정부24", "경찰청 교통민원24", "TS국가자격시험", "자동차365"], answer: 2, explain: "자료에는 TS국가자격시험 홈페이지(lic.kotsa.or.kr)에서 인터넷 예약·신청하도록 안내되어 있습니다." },
+      { category: "신규검사", q: "신규로 사업용자동차를 운전하려는 사람이 받아야 하는 검사는?", choices: ["신규검사", "특별검사", "자격유지검사", "군운전적성정밀검사"], answer: 0, explain: "신규로 사업용자동차를 운전하려는 경우 신규검사 대상입니다." },
+      { category: "신규검사", q: "신규검사 적합 판정 후 3년이 지난 사람이 재취업하려 합니다. 재취업일까지 사고가 있었다면?", choices: ["검사 없이 취업 가능", "특별검사만 수검", "신규검사를 다시 수검", "자격유지검사로 대체"], answer: 2, explain: "신규검사 후 3년이 경과했고 재취업일까지 사고가 있었다면 신규검사를 다시 받아야 합니다." },
+      { category: "신규검사", q: "신규검사 적합 판정 후 3년이 지났어도 재검사가 면제되는 경우는?", choices: ["운전경력 10년 이상", "재취업일까지 무사고", "벌점 40점 이하", "만 65세 미만"], answer: 1, explain: "자료상 재취업일까지 무사고 운전자는 신규검사 재수검 대상에서 제외됩니다." },
+      { category: "신규검사", q: "재취업 전 사고 여부를 판단할 때 기준이 되는 서류는?", choices: ["자동차등록증", "보험가입증명서", "운전경력증명서", "건강검진결과서"], answer: 2, explain: "사고 여부는 경찰청에서 발급하는 운전경력증명서를 기준으로 확인합니다." },
+      { category: "신규검사", q: "신규검사의 소요시간과 수수료가 올바르게 짝지어진 것은?", choices: ["약 120분·20,000원", "약 150분·20,000원", "약 150분·25,000원", "약 180분·25,000원"], answer: 2, explain: "신규검사는 약 150분(2시간 30분)이 소요되며 수수료는 25,000원입니다." },
+      { category: "신규검사", q: "신규검사에서 부적합 판정을 받은 뒤 재응시할 수 있는 시점은?", choices: ["검사 다음 날", "7일 뒤", "14일 뒤", "30일 뒤"], answer: 2, explain: "신규검사는 검사를 받은 날로부터 14일 뒤 재응시할 수 있습니다." },
+      { category: "군 검사", q: "군운전적성정밀검사의 대상자로 가장 적절한 것은?", choices: ["모든 입대 예정자", "군 운전병 지원자 또는 군 운전직 종사자", "사업용 화물차 운전자만", "자동차검사 정비원"], answer: 1, explain: "군 운전병 지원자 또는 군 운전직 종사자가 대상이며 육·해·공군, 의무경찰, 군무원 등이 포함됩니다." },
+      { category: "군 검사", q: "군운전적성정밀검사의 수수료와 결과가 올바르게 짝지어진 것은?", choices: ["20,000원·적합 또는 부적합", "25,000원·수료", "20,000원·수료", "25,000원·적합 또는 부적합"], answer: 0, explain: "군운전적성정밀검사 수수료는 20,000원이며 결과는 적합 또는 부적합입니다." },
+      { category: "특별검사", q: "과거 1년간 운전면허 행정처분 누산점수가 몇 점 이상이면 특별검사 대상인가?", choices: ["61점", "71점", "81점", "91점"], answer: 2, explain: "과거 1년간 운전면허 행정처분 누산점수(벌점)가 81점 이상이면 특별검사 대상입니다." },
+      { category: "특별검사", q: "특별검사 대상이 되는 중상 기준이 올바른 것은?", choices: ["여객 2주·화물 3주", "여객 3주·화물 5주", "여객 4주·화물 4주", "여객 5주·화물 3주"], answer: 1, explain: "자료상 중상 기준은 여객 3주, 화물 5주입니다." },
+      { category: "특별검사", q: "특별검사의 결과 처리 방식은?", choices: ["적합 또는 부적합", "합격 또는 불합격", "수료 처리하며 적부 판정 없음", "1~5등급 판정"], answer: 2, explain: "특별검사는 수료 처리되며 적합·부적합 판정이 없습니다." },
+      { category: "자격유지검사", q: "만 65세 이상 만 70세 미만 사업용 차량 운전자의 자격유지검사 주기는?", choices: ["매년", "2년마다", "3년마다", "5년마다"], answer: 2, explain: "만 65세 이상 만 70세 미만은 3년마다 자격유지검사를 받아야 합니다." },
+      { category: "자격유지검사", q: "만 70세 이상 사업용 차량 운전자의 자격유지검사 주기는?", choices: ["6개월마다", "1년마다", "2년마다", "3년마다"], answer: 1, explain: "만 70세 이상은 1년마다 자격유지검사를 받아야 합니다." },
+      { category: "자격유지검사", q: "자격유지검사의 소요시간과 수수료는?", choices: ["약 120분·20,000원", "약 150분·20,000원", "약 120분·25,000원", "약 150분·25,000원"], answer: 0, explain: "자격유지검사는 약 120분(2시간)이 소요되며 수수료는 20,000원입니다." },
+      { category: "의료적성검사", q: "병·의원 의료적성검사로 공단 자격유지검사를 대체할 수 있는 업종은?", choices: ["버스·렌터카", "화물·택시", "철도·항공", "모든 여객 업종"], answer: 1, explain: "자료상 의료적성검사 대상은 화물 및 택시 업종 운전자입니다." },
+      { category: "수검 유의사항", q: "예약한 검사 당일 검사장 도착 시각으로 올바른 것은?", choices: ["예약시간 정각", "예약시간 10분 후까지", "예약시간 20분 전까지", "검사 시작 후 30분 이내"], answer: 2, explain: "예약시간 이후에는 수검할 수 없으므로 검사시간 20분 전까지 도착해야 합니다." },
+      { category: "접수·결제", q: "인터넷 접수 단계에서 카드 결제까지 완료한 수검자가 방문했다. 올바른 접수 처리는?", choices: ["다시 카드 결제를 받는다", "접수 처리 후 영수증에 좌석번호를 적어 준다", "결제 확인 없이 바로 검사실로 보낸다", "현금 영수증만 새로 발급한다"], answer: 1, explain: "인터넷에서 카드 결제를 완료한 경우 접수 처리 후 영수증에 좌석번호를 적어 줍니다." },
+      { category: "접수·결제", q: "인터넷 예약 시 현장결제를 선택했거나 아직 결제하지 않은 수검자의 처리 방법은?", choices: ["인터넷으로 다시 예약하게 한다", "현금 또는 카드로 결제받고 영수증과 좌석번호를 적어 준다", "검사 종료 후 결제받는다", "현금으로만 결제받는다"], answer: 1, explain: "현장결제 또는 미결제자는 현금이나 카드로 결제받은 뒤 영수증에 좌석번호를 적어 줍니다." },
+      { category: "접수 시스템", q: "예약자를 확인하고 접수 처리할 때 사용하는 DATOS 메뉴는?", choices: ["검사결과 조회", "예약자 확인 및 접수처리", "수검자 통계관리", "자격증 발급관리"], answer: 1, explain: "접수 경로는 DATOS의 ‘예약자 확인 및 접수처리’입니다." },
+      { category: "원스톱 노쇼", q: "원스톱 검사 예약자가 당일 방문하지 않은 경우 현장에서 임의로 취소할 수 없는 주된 이유는?", choices: ["검사실 좌석이 이미 배정됐기 때문", "자격시험과 연계되어 있기 때문", "카드 결제만 가능하기 때문", "당일 예약자가 많기 때문"], answer: 1, explain: "원스톱 검사는 자격시험과 연계되어 있어 미방문자를 현장에서 임의 취소할 수 없습니다." },
+      { category: "원스톱 노쇼", q: "원스톱 검사 예약자가 방문하지 않았을 때 정밀검사 접수 처리는?", choices: ["미접수 상태로 둔다", "예약 자체를 삭제한다", "접수 처리를 눌러 수입으로 잡는다", "다음 회차로 자동 이월한다"], answer: 2, explain: "자료에서는 수검자가 방문하지 않아도 ‘접수’ 처리를 눌러 수입으로 잡도록 안내합니다." },
+      { category: "원스톱 취소", q: "원스톱 시험을 취소하려면 어느 시스템에서 처리해야 하는가?", choices: ["DATOS", "정부24", "국가자격시험 자격관리(KQM)", "자동차365"], answer: 2, explain: "원스톱 시험 취소는 국가자격시험 자격관리(KQM)에서 처리합니다." },
+      { category: "원스톱 환불", q: "원스톱 검사 수검자가 정밀검사에서 부적합 판정을 받은 경우 이후 예정된 화물자격시험 비용은?", choices: ["환불되지 않는다", "절반만 환불된다", "자동 환불 처리된다", "정밀검사 비용과 함께 다음 회차로 이월된다"], answer: 2, explain: "정밀검사 부적합 시 이후 예정된 화물자격시험 비용은 자동 환불 처리됩니다." },
+      { category: "원스톱 예외", q: "‘정밀검사+택시 또는 버스 운전자격시험’ 원스톱 예약자가 정밀검사를 제때 받기 어려운 상황이다. 우선 안내할 사항은?", choices: ["모든 일정을 취소한다", "운전자격시험부터 응시하게 한다", "정밀검사만 응시하게 한다", "다음 달에 두 시험을 다시 예약하게 한다"], answer: 1, explain: "자격시험 비용의 매몰을 막기 위해 운전자격시험을 먼저 응시하게 하고, 정밀검사는 당일 잔여좌석 또는 다른 날 수검하도록 안내합니다." },
+      { category: "원스톱 예외", q: "원스톱 자격시험 비용을 환불받기 위해 응시자가 직접 취소해야 하는 기한은?", choices: ["시험 전날 12시까지", "시험 전날 18시까지", "시험 당일 시작 전까지", "시험 종료 후 24시간 이내"], answer: 1, explain: "자격시험은 전날 18시까지 응시자가 직접 취소하지 않으면 비용을 환불받을 수 없습니다." },
+      { category: "원스톱 예외", q: "정밀검사와 자격시험의 당일 미응시 환불 특성을 올바르게 설명한 것은?", choices: ["두 검사 모두 환불 가능", "두 검사 모두 환불 불가", "정밀검사는 환불 가능하지만 자격시험은 기한 후 환불 불가", "자격시험만 환불 가능"], answer: 2, explain: "자료상 정밀검사는 환불이 가능하지만 자격시험은 전날 18시까지 취소하지 않으면 비용이 매몰됩니다." },
+      { category: "원스톱 예외", q: "자격시험을 먼저 본 원스톱 예약자가 정밀검사 수검을 원할 때 가능한 안내는?", choices: ["정밀검사를 영구 면제한다", "당일 오후 잔여좌석 또는 다른 날짜 수검을 안내한다", "반드시 신규 예약부터 취소하게 한다", "당일 자격시험 결과가 나올 때까지 아무 안내도 하지 않는다"], answer: 1, explain: "당일 오후 정밀검사 좌석이 비었으면 수검하도록 안내하고, 자리가 없으면 다른 날 수검하도록 안내할 수 있습니다." },
+      { category: "좌석 운영", q: "보통 1개 검사실은 몇 좌석 수준으로 운영하는가?", choices: ["21~23석", "26~28석", "31~33석", "36~38석"], answer: 2, explain: "일반적으로 검사실 1개당 31~33좌석 수준으로 운영합니다." },
+      { category: "좌석 운영", q: "1개 검사실의 최대 운영 좌석 수는?", choices: ["33석", "34석", "35석", "40석"], answer: 2, explain: "자료에 제시된 1개 검사실의 최대 좌석은 35석입니다." },
+      { category: "잔여좌석", q: "직원의 실수로 전화예약을 잘못 안내한 민원인이 방문했다. 잔여좌석이 있다면?", choices: ["잔여좌석 배정 대상이 될 수 있다", "무조건 귀가시킨다", "자격시험만 응시시킨다", "잔여좌석과 관계없이 접수를 취소한다"], answer: 0, explain: "직원의 전화예약 안내 실수로 방문한 경우는 잔여좌석을 배정할 수 있는 사례로 제시되어 있습니다." },
+      { category: "잔여좌석", q: "원스톱 예약자가 자격시험을 먼저 응시한 뒤 정밀검사 수검이 필요한 경우 잔여좌석 배정이 가능한가?", choices: ["가능하다", "불가능하다", "군 검사만 가능하다", "만 70세 이상만 가능하다"], answer: 0, explain: "원스톱 예약자가 자격시험을 먼저 응시하고 정밀검사가 필요한 경우 잔여좌석 배정 대상이 될 수 있습니다." },
+      { category: "잔여좌석", q: "예약 없이 현장에 온 사람이 있을 때 잔여좌석 처리로 올바른 것은?", choices: ["좌석이 비어 있어도 접수 불가", "좌석이 비어 있으면 배정 가능", "최대 좌석을 초과해도 접수 가능", "자격유지검사만 접수 가능"], answer: 1, explain: "예약 없이 방문했더라도 마침 자리가 비어 있으면 잔여좌석을 배정할 수 있습니다." },
+      { category: "좌석번호", q: "자격유지검사의 회차별 좌석번호 대역이 올바른 것은?", choices: ["1회차 8번대·2회차 9번대·3회차 6번대", "1회차 2번대·2회차 1번대·3회차 0번대", "1회차 6번대·2회차 8번대·3회차 9번대", "1회차 9번대·2회차 6번대·3회차 8번대"], answer: 0, explain: "자격유지검사는 1회차 8번대, 2회차 9번대, 3회차 6번대 좌석을 사용합니다." },
+      { category: "좌석번호", q: "신규검사의 회차별 좌석번호 대역이 올바른 것은?", choices: ["1회차 8번대·2회차 9번대·3회차 6번대", "1회차 0번대·2회차 1번대·3회차 2번대", "1회차 2번대·2회차 1번대·3회차 0번대", "1회차 6번대·2회차 9번대·3회차 8번대"], answer: 2, explain: "신규검사는 1회차 2번대, 2회차 1번대, 3회차 0번대 좌석을 사용합니다." },
+      { category: "여객 자격시험", q: "버스·택시 운전자격증 소지자가 음주운전으로 운전면허 정지 처분을 받은 경우 응시제한 기간은?", choices: ["1년", "2년", "3년", "5년"], answer: 2, explain: "여객 운전자격증 소지자가 음주운전으로 운전면허 정지 처분을 받은 경우 응시제한은 3년입니다." },
+      { category: "여객 자격시험", q: "버스·택시 운전자격증 소지자가 무면허로 벌금형을 받거나 운전면허가 취소된 경우 응시제한 기간은?", choices: ["2년", "3년", "4년", "5년"], answer: 3, explain: "무면허로 벌금형을 받거나 운전면허가 취소된 경우 응시제한은 5년입니다." }
+    ];
+
+    let questions = [...allQuestions];
+    let current = 0;
+    let answers = [];
+    let startTime = Date.now();
+    let timerId;
+
+    const $ = id => document.getElementById(id);
+    const labels = ["①", "②", "③", "④"];
+
+    function init(questionSet = allQuestions) {
+      questions = [...questionSet];
+      current = 0;
+      answers = Array(questions.length).fill(null);
+      startTime = Date.now();
+      clearInterval(timerId);
+      timerId = setInterval(updateTimer, 1000);
+      $("quizView").style.display = "block";
+      $("resultView").classList.remove("show");
+      buildNavigator();
+      updateStats();
+      renderQuestion();
+      updateTimer();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function buildNavigator() {
+      $("navigator").innerHTML = questions.map((_, i) => `<button class="nav-dot" type="button" aria-label="${i + 1}번 문항">${i + 1}</button>`).join("");
+    }
+
+    function renderQuestion() {
+      const item = questions[current];
+      $("counter").textContent = `문제 ${current + 1} / ${questions.length}`;
+      $("progressBar").style.width = `${((current + 1) / questions.length) * 100}%`;
+      $("category").textContent = item.category;
+      $("question").textContent = item.q;
+      $("feedback").className = "feedback";
+      $("feedback").innerHTML = "";
+      $("nextBtn").disabled = true;
+      $("nextBtn").textContent = current === questions.length - 1 ? "결과 보기" : "다음 문제";
+      $("choices").innerHTML = item.choices.map((choice, i) => `
+        <button class="choice" type="button" data-index="${i}">
+          <span class="choice-key">${labels[i]}</span><span>${choice}</span>
+        </button>`).join("");
+      document.querySelectorAll(".choice").forEach(btn => btn.addEventListener("click", () => selectAnswer(Number(btn.dataset.index))));
+      updateNavigator();
+    }
+
+    function selectAnswer(selected) {
+      if (answers[current] !== null) return;
+      const item = questions[current];
+      const isCorrect = selected === item.answer;
+      answers[current] = { selected, correct: isCorrect };
+      document.querySelectorAll(".choice").forEach((btn, index) => {
+        btn.disabled = true;
+        if (index === item.answer) btn.classList.add("correct");
+        if (index === selected && !isCorrect) btn.classList.add("wrong");
+      });
+      const feedback = $("feedback");
+      feedback.className = `feedback show ${isCorrect ? "good" : "bad"}`;
+      feedback.innerHTML = `<span class="feedback-title">${isCorrect ? "정답입니다" : `오답입니다 · 정답 ${labels[item.answer]}`}</span>${item.explain}`;
+      $("nextBtn").disabled = false;
+      updateStats();
+      updateNavigator();
+      saveProgress();
+    }
+
+    function nextQuestion() {
+      if (answers[current] === null) return;
+      if (current < questions.length - 1) {
+        current++;
+        renderQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function updateStats() {
+      const done = answers.filter(Boolean);
+      const correct = done.filter(a => a.correct).length;
+      const wrong = done.length - correct;
+      $("correctCount").textContent = correct;
+      $("wrongCount").textContent = wrong;
+      $("rate").textContent = done.length ? `${Math.round(correct / done.length * 100)}%` : "0%";
+    }
+
+    function updateNavigator() {
+      document.querySelectorAll(".nav-dot").forEach((dot, i) => {
+        dot.className = "nav-dot";
+        if (i === current) dot.classList.add("current");
+        if (answers[i]) dot.classList.add(answers[i].correct ? "correct" : "wrong");
+      });
+    }
+
+    function updateTimer() {
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      const min = String(Math.floor(elapsed / 60)).padStart(2, "0");
+      const sec = String(elapsed % 60).padStart(2, "0");
+      $("timer").textContent = `${min}:${sec}`;
+    }
+
+    function showResult() {
+      clearInterval(timerId);
+      const correct = answers.filter(a => a?.correct).length;
+      const score = Math.round(correct / questions.length * 100);
+      $("quizView").style.display = "none";
+      $("resultView").classList.add("show");
+      $("finalScore").textContent = score;
+      $("scoreRing").style.setProperty("--score-angle", `${score * 3.6}deg`);
+      $("resultTitle").textContent = score >= 90 ? "업무 숙달 우수" : score >= 75 ? "거의 다 익혔습니다" : score >= 60 ? "한 번 더 복습해 보세요" : "핵심 기준 복습이 필요합니다";
+      $("resultSummary").textContent = `${questions.length}문항 기준 ${correct}개 정답 · ${questions.length - correct}개 오답 · 경과 시간 ${$("timer").textContent}`;
+      $("retryWrong").style.display = correct === questions.length ? "none" : "inline-block";
+      $("reviewList").innerHTML = questions.map((q, i) => {
+        const a = answers[i];
+        return `<article class="review-item ${a.correct ? "correct" : "wrong"}">
+          <strong>${i + 1}. ${q.q}</strong>
+          <small>${a.correct ? "정답" : `내 답: ${labels[a.selected]} · 정답: ${labels[q.answer]}`} — ${q.explain}</small>
+        </article>`;
+      }).join("");
+      if (questions.length === allQuestions.length) {
+        localStorage.setItem("tsAptitudeBest", String(Math.max(score, Number(localStorage.getItem("tsAptitudeBest") || 0))));
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function saveProgress() {
+      localStorage.setItem("tsAptitudeLast", JSON.stringify({ at: new Date().toISOString(), done: answers.filter(Boolean).length, correct: answers.filter(a => a?.correct).length }));
+    }
+
+    $("nextBtn").addEventListener("click", nextQuestion);
+    $("retryAll").addEventListener("click", () => init(allQuestions));
+    $("retryWrong").addEventListener("click", () => {
+      const wrongs = questions.filter((_, i) => !answers[i]?.correct);
+      init(wrongs.length ? wrongs : allQuestions);
+    });
+    $("resetTop").addEventListener("click", () => init(allQuestions));
+    document.addEventListener("keydown", e => {
+      if (["1", "2", "3", "4"].includes(e.key) && answers[current] === null && $("quizView").style.display !== "none") selectAnswer(Number(e.key) - 1);
+      if (e.key === "Enter" && !$("nextBtn").disabled) nextQuestion();
+    });
+
+    init();
+  </script>
+</body>
+</html>
